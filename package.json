@@ -2,10 +2,10 @@
   "name": "reason-weather",
   "version": "0.1.0",
   "scripts": {
-    "build": "bsb -make-world",
+    "build": "bsb -make-world && webpack",
     "start": "bsb -make-world -w -ws _ ",
     "clean": "bsb -clean-world",
-    "server": "moduleserve ./ --port 8000",
+    "server": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,12 +17,16 @@
   "license": "MIT",
   "dependencies": {
     "@glennsl/bs-json": "^5.0.2",
+    "bs-fetch": "^0.5.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "reason-react": ">=0.7.1"
   },
   "devDependencies": {
     "bs-platform": "^7.3.2",
-    "moduleserve": "^0.9.0"
+    "html-webpack-plugin": "^4.3.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
   }
 }
