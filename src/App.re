@@ -3,22 +3,30 @@ open Api;
 
 [@react.component]
 let make = () => {
+  let (weather, setWeather) = React.useState(() => None);
+
   React.useEffect0(() => {
     Js.Promise.(
-      Fetch.fetch(getWeatherByCity("las vegas"))
-      |> then_(Fetch.Response.json)
-      |> then_(json => {
-           Js.log(json |> Api.decodeResponse);
-           Js.log(json);
+      getWeather(Geo(36.17, -115.14))
+      |> then_(data => {
+           setWeather(_ => Some(data));
            Js.Promise.resolve();
          })
       |> catch(_err => {
            Js.log(_err);
+           setWeather(_ => None);
            Js.Promise.resolve();
          })
       |> ignore
     );
     None;
   });
-  <div> {s("Hello world")} </div>;
+
+  Js.log(weather);
+  <div>
+    {switch (weather) {
+     | Some(data) => <Weather data />
+     | None => <h1> {s("Loading...")} </h1>
+     }}
+  </div>;
 };
