@@ -4,12 +4,10 @@ open Api;
 [@react.component]
 let make = () => {
   let (weather, setWeather) = React.useState(() => None);
-  let (value, setValue) = React.useState(() => "");
 
-  let onSubmit = e => {
-    e |> ReactEvent.Form.preventDefault;
+  let onWeather = w =>
     Js.Promise.(
-      getWeather(City(value))
+      w
       |> then_(data => setWeather(_ => Some(data)) |> resolve)
       |> catch(_err => {
            Js.log(_err);
@@ -17,31 +15,18 @@ let make = () => {
          })
       |> ignore
     );
-  };
+
+  let onCity = city => getWeather(city) |> onWeather;
 
   React.useEffect0(() => {
-    Js.Promise.(
-      getWeather(Geo(36.17, -115.14))
-      |> then_(data => setWeather(_ => Some(data)) |> resolve)
-      |> catch(_err => {
-           Js.log(_err);
-           setWeather(_ => None) |> resolve;
-         })
-      |> ignore
-    );
+    let withGeo = (lat, lon) => getWeather(Geo(lat, lon)) |> onWeather;
+    let withErr = e => Js.log(e);
+    Geo.getGeolocation(~sendGeo=withGeo, ~sendErr=withErr);
     None;
   });
 
   <div className="container">
-    <form onSubmit>
-      <input
-        type_="text"
-        placeholder="Enter city"
-        value
-        onChange={e => e->ReactEvent.Form.target##value |> setValue}
-      />
-      <button type_="submit"> {s("Submit")} </button>
-    </form>
+    <CityForm onCity />
     {switch (weather) {
      | Some(data) => <Weather data />
      | None => <h1> {s("Loading...")} </h1>
